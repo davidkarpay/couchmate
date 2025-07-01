@@ -2,6 +2,84 @@ import React, { useState, useEffect } from 'react';
 import { Heart, X, Star, MessageCircle, User, Flame, Sparkles } from 'lucide-react';
 
 const CouchMate = () => {
+  // Add swipe gesture support
+  const cardRef = React.useRef(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    let startX = 0;
+    let startY = 0;
+    let isSwiping = false;
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isSwiping = true;
+      }
+    };
+    const onTouchMove = (e) => {
+      // Optionally, you could add visual feedback here
+    };
+    const onTouchEnd = (e) => {
+      if (!isSwiping) return;
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const dx = endX - startX;
+      const dy = endY - startY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) {
+          handleSwipe('right');
+        } else {
+          handleSwipe('left');
+        }
+      } else if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx)) {
+        if (dy < 0) {
+          handleSwipe('up');
+        }
+      }
+      isSwiping = false;
+    };
+    card.addEventListener('touchstart', onTouchStart);
+    card.addEventListener('touchmove', onTouchMove);
+    card.addEventListener('touchend', onTouchEnd);
+    // Mouse events for desktop
+    let mouseDown = false;
+    let mouseStartX = 0;
+    let mouseStartY = 0;
+    const onMouseDown = (e) => {
+      mouseDown = true;
+      mouseStartX = e.clientX;
+      mouseStartY = e.clientY;
+    };
+    const onMouseUp = (e) => {
+      if (!mouseDown) return;
+      const dx = e.clientX - mouseStartX;
+      const dy = e.clientY - mouseStartY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) {
+          handleSwipe('right');
+        } else {
+          handleSwipe('left');
+        }
+      } else if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx)) {
+        if (dy < 0) {
+          handleSwipe('up');
+        }
+      }
+      mouseDown = false;
+    };
+    card.addEventListener('mousedown', onMouseDown);
+    card.addEventListener('mouseup', onMouseUp);
+    return () => {
+      card.removeEventListener('touchstart', onTouchStart);
+      card.removeEventListener('touchmove', onTouchMove);
+      card.removeEventListener('touchend', onTouchEnd);
+      card.removeEventListener('mousedown', onMouseDown);
+      card.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [currentIndex, swipeDirection]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [matches, setMatches] = useState([]);
   const [showMatch, setShowMatch] = useState(false);
@@ -68,6 +146,114 @@ const CouchMate = () => {
       image: "🪑",
       color: "#DEB887",
       verified: false
+    },
+    {
+      id: 6,
+      name: "Zabuton-san",
+      age: "12 years old",
+      material: "Traditional Cotton & Tatami",
+      location: "Tokyo Office, 47th Floor",
+      tags: ["Minimalist", "Tea Ceremony Ready", "Zen Meetings"],
+      bio: "Ground-level executive seating from Japan. I believe in humble leadership and mindful sitting. Perfect for VPs who practice 'kaizen' in quarterly reviews.",
+      image: "🪑",
+      color: "#4A5568",
+      verified: true
+    },
+    {
+      id: 7,
+      name: "Majlis",
+      age: "5 years old",
+      material: "Damascus Silk & Gold Thread",
+      location: "Dubai Financial District",
+      tags: ["Oil Money", "24/7 Deals", "Hookah Compatible"],
+      bio: "Arabian nights meet corporate flights. I've hosted midnight merger discussions and dawn IPO celebrations. Seeking a VP who knows true hospitality.",
+      image: "🛋️",
+      color: "#FFD700",
+      verified: true
+    },
+    {
+      id: 8,
+      name: "Ming",
+      age: "400 years old (replica)",
+      material: "Rosewood & Mother of Pearl",
+      location: "Hong Kong Trade Center",
+      tags: ["Ancient Wisdom", "Feng Shui Approved", "Dragon Energy"],
+      bio: "Classic Chinese craftsmanship meets modern commerce. My ancestors seated emperors; now I seek a VP worthy of building empires. No sitting with shoes on!",
+      image: "🪑",
+      color: "#8B0000",
+      verified: true
+    },
+    {
+      id: 9,
+      name: "Sedari",
+      age: "7 years old",
+      material: "Moroccan Wool & Cedar",
+      location: "Casablanca Business Hub",
+      tags: ["Exotic Meetings", "Mint Tea Included", "Desert Chic"],
+      bio: "North African elegance for transcontinental deals. Low profile, high impact. I make every board meeting feel like a diplomatic summit in a riad.",
+      image: "🛋️",
+      color: "#CD853F",
+      verified: true
+    },
+    {
+      id: 10,
+      name: "Gustav",
+      age: "4 years old",
+      material: "Swedish Pine & Sheepskin",
+      location: "Stockholm Innovation Park",
+      tags: ["Hygge Approved", "Work-Life Balance", "Nobel Prize Sat Here"],
+      bio: "Scandinavian simplicity meets C-suite functionality. I believe meetings should end by 4pm and include fika. IKEA could never.",
+      image: "🪑",
+      color: "#87CEEB",
+      verified: true
+    },
+    {
+      id: 11,
+      name: "Ashanti",
+      age: "10 years old",
+      material: "Kente Cloth & Mahogany",
+      location: "Lagos Tech Quarter",
+      tags: ["Afrofuturism", "Diaspora Connected", "Royal Heritage"],
+      bio: "West African royalty meets modern entrepreneurship. My patterns tell stories of kingdoms while supporting your startup unicorn dreams.",
+      image: "🛋️",
+      color: "#DAA520",
+      verified: true
+    },
+    {
+      id: 12,
+      name: "Tatami Lounge",
+      age: "1 year old",
+      material: "Bamboo & Organic Linen",
+      location: "Kyoto Satellite Office",
+      tags: ["Remote Work Ready", "Meditation Mode", "Shoes Off Policy"],
+      bio: "Modern Japanese floor seating for the flexible VP. I lower your ego while elevating your mindfulness. Best paired with a standing desk.",
+      image: "🪑",
+      color: "#8FBC8F",
+      verified: false
+    },
+    {
+      id: 13,
+      name: "Dmitri Divanovich",
+      age: "45 years old (Soviet Era)",
+      material: "Crimson Velvet & Birch",
+      location: "Moscow Financial District",
+      tags: ["Oligarch Tested", "Vodka Proof", "Chess Ready"],
+      bio: "Classic Russian divan with stories from the Soviet boardrooms. I've hosted late-night negotiations and survived more regime changes than your startup pivots. Looking for VP who appreciates history and doesn't fear bears or markets.",
+      image: "🛋️",
+      color: "#8B0000",
+      verified: true
+    },
+    {
+      id: 14,
+      name: "Oksana",
+      age: "6 years old",
+      material: "Hand-carved Oak & Embroidered Linen",
+      location: "Kyiv Tech Hub",
+      tags: ["Resilient", "Sunflower Soul", "Victory Meetings"],
+      bio: "Ukrainian bench with geometric soul and floral heart. My carved patterns tell stories of strength and beauty. Seeking VP who values craftsmanship, courage, and believes in building better futures. Slava productivity!",
+      image: "🪑",
+      color: "#0057B7",
+      verified: true
     }
   ];
 
@@ -194,7 +380,7 @@ const CouchMate = () => {
         {currentView === 'swipe' ? (
           <>
             {currentIndex < profiles.length ? (
-              <div className="relative h-full max-w-sm mx-auto">
+              <div className="relative h-full max-w-sm mx-auto" ref={cardRef} style={{ touchAction: 'pan-y' }}>
                 <ProfileCard 
                   profile={currentProfile} 
                   isAnimating={swipeDirection !== null}
